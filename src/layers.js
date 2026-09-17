@@ -3,6 +3,7 @@ import {
   Color,
   Cartesian3,
   CustomDataSource,
+  PointGraphics,
   WebMapTileServiceImageryProvider,
   UrlTemplateImageryProvider,
   ScreenSpaceEventHandler,
@@ -144,14 +145,22 @@ export async function addFeed(feed, geojson) {
     ds.clustering.pixelRange = 40;
     ds.clustering.minimumClusterSize = 2;
     ds.clustering.clusterEvent.addEventListener((_clusteredEntities, cluster) => {
-      cluster.label.text = String(_clusteredEntities.length);
-      cluster.label.font = '11px monospace';
-      cluster.label.fillColor = Color.WHITE;
-      cluster.label.disableDepthTestDistance = Number.POSITIVE_INFINITY;
-      cluster.point.setProperty('color', Color.fromCssColorString('#22d3ee'));
-      cluster.point.setProperty('pixelSize', 12 + Math.min(10, _clusteredEntities.length));
-      cluster.point.setProperty('outlineColor', Color.BLACK);
-      cluster.point.setProperty('outlineWidth', 2);
+      try {
+        cluster.label.text = String(_clusteredEntities.length);
+        cluster.label.font = '11px monospace';
+        cluster.label.fillColor = Color.WHITE;
+        cluster.label.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+        cluster.point = new PointGraphics({
+          color: Color.fromCssColorString('#22d3ee'),
+          pixelSize: 12 + Math.min(10, _clusteredEntities.length),
+          outlineColor: Color.BLACK,
+          outlineWidth: 2,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY
+        });
+      } catch (err) {
+        // never let a styling error break the render loop
+        console.warn('cluster styling failed:', err);
+      }
     });
   }
 

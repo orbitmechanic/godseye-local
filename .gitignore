@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.cache/
 public/cesium-assets/
 public/data/snapshots/*.json
 public/data/snapshots/*.geojson

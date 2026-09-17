@@ -4,7 +4,6 @@ import {
   Cartesian3,
   CustomDataSource,
   PointGraphics,
-  WebMapTileServiceImageryProvider,
   UrlTemplateImageryProvider,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType
@@ -24,13 +23,11 @@ function makeImagery(providerName) {
       credit: '© OpenStreetMap contributors'
     });
   }
-  // NASA GIBS Blue Marble (EPSG:3857), no key required.
-  return new WebMapTileServiceImageryProvider({
-    url: 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/{Layer}/{Style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.{Format}',
-    layer: 'BlueMarble_NextGeneration',
-    style: 'default',
-    tileMatrixSetID: 'GoogleMapsCompatible_Level8',
-    format: 'image/jpeg',
+  // NASA GIBS Blue Marble (EPSG:3857), no key required. Cesium's WMTS provider
+  // in 1.145 does not substitute {Layer}/{Format} in REST paths, so use the
+  // literal template with UrlTemplateImageryProvider instead.
+  return new UrlTemplateImageryProvider({
+    url: 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg',
     maximumLevel: 8,
     credit: 'NASA GIBS'
   });
@@ -57,6 +54,15 @@ export function initGlobe(appConfig, { onCountUpdate, onPick: pickCb }) {
   viewer.imageryLayers.addImageryProvider(makeImagery(appConfig.imagery || 'nasa'), 0);
   viewer.scene.globe.baseColor = Color.fromCssColorString('#05070c');
   viewer.scene.skyBox.show = false;
+
+  const imgLayer = viewer.imageryLayers.get(0);
+  const provider = imgLayer.imageryProvider;
+  provider.errorEvent.addEventListener((err) => {
+    console.warn('imagery error:', (err && (err.message || err)) || err);
+  });
+  viewer.scene.renderError.addEventListener((_scene, err) => {
+    console.error('scene render error:', err && err.message);
+  });
 
   const home = appConfig.homeView || { longitude: -95, latitude: 35, height: 6000000 };
   viewer.camera.setView({
@@ -192,7 +198,7 @@ export function getFeatureEntity(feedId, index) {
 
 export function flyToEntity(feedId, index) {
   const entity = getFeatureEntity(feedId, index);
-  if (entity) viewer.zoomTo(entity, 0);
+  if (entity) viewer.zoomTo(entity);
 }
 
 export function forceSceneRender() {

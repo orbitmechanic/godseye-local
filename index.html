@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Godseye Local</title>
+</head>
+<body>
+  <div id="map"></div>
+
+  <aside id="side">
+    <header id="brand">
+      <span class="dot"></span>
+      <h1>GODSEYE<span>LOCAL</span></h1>
+      <div id="clock"></div>
+    </header>
+
+    <section id="layers">
+      <h2>LAYERS</h2>
+      <div id="layerList"></div>
+    </section>
+
+    <section id="news">
+      <h2>NEWS / EVENTS</h2>
+      <div id="newsList"></div>
+    </section>
+  </aside>
+
+  <div id="info" class="hidden">
+    <button id="infoClose" title="close">&times;</button>
+    <div id="infoBody"></div>
+  </div>
+
+  <div id="scratchpad">
+    <textarea id="scratch" spellcheck="false"
+      placeholder="Paste a URL (GeoJSON, CSV, RSS) — hit Ctrl+Enter to add it as a layer"></textarea>
+  </div>
+
+  <div id="statusbar"><span id="statusText">loading config…</span></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

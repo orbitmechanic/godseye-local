@@ -1,0 +1,20 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-73.99, 40.72] }, "properties": { "callsign": "UAL1", "originCountry": "United States", "altitude": 11000, "velocity": 248, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-122.4, 37.62] }, "properties": { "callsign": "AAL100", "originCountry": "United States", "altitude": 120000, "velocity": 252, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [13.40, 52.52] }, "properties": { "callsign": "DLH400", "originCountry": "Germany", "altitude": 10000, "velocity": 244, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-0.13, 51.51] }, "properties": { "callsign": "BAW268", "originCountry": "United Kingdom", "altitude": 10000, "velocity": 240, "category": 4 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [139.70, 35.68] }, "properties": { "callsign": "ANA12", "originCountry": "Japan", "altitude": 10000, "velocity": 236, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [116.40, 39.90] }, "properties": { "callsign": "CSN310", "originCountry": "China", "altitude": 1000, "velocity": 225, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [103.85, 1.29] }, "properties": { "callsign": "SIA222", "originCountry": "Singapore", "altitude": 11000, "velocity": 243, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [2.35, 48.86] }, "properties": { "callsign": "AFR985", "originCountry": "France", "altitude": 10000, "velocity": 239, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-46.63, -23.55] }, "properties": { "callsign": "TAM330", "originCountry": "Brazil", "altitude": 10000, "velocity": 238, "category": 4 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [151.21, -33.87] }, "properties": { "callsign": "QFA8", "originCountry": "Australia", "altitude": 12000, "velocity": 251, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-3.70, 40.42] }, "properties": { "callsign": "IBE63", "originCountry": "Spain", "altitude": 9500, "velocity": 235, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [37.62, 55.75] }, "properties": { "callsign": "AFL16", "originCountry": "Russia", "altitude": 10500, "velocity": 246, "category": 3 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [28.98, 41.01] }, "properties": { "callsign": "THY25", "originCountry": "Turkey", "altitude": 10800, "velocity": 241, "category": 4 } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [55.27, 25.20] }, "properties": { "callsign": "UAE111", "originCountry": "United Arab Emirates", "altitude": 11500, "velocity": 250, "category": 3 } }
+  ],
+  "meta": { "source": "sample", "note": "Illustrative snapshot. Run `npm run fetch:air` for live data." }
+}

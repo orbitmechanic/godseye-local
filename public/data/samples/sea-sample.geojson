@@ -1,0 +1,16 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-74.0, 40.5] }, "properties": { "name": "EVER GIVEN 2", "mmsi": 477712300, "type": "Cargo", "destination": "New York", "speed": 17.5, "heading": 310, "flag": "Hong Kong" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-1.5, 49.4] }, "properties": { "name": "MAERSK CHESHIRE", "mmsi": 219018547, "type": "Cargo", "destination": "Rotterdam", "speed": 16.2, "heading": 45, "flag": "Denmark" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [3.8, 52.0] }, "properties": { "name": "HOLLAND SEA", "mmsi": 244900512, "type": "Tanker", "destination": "Hamburg", "speed": 12.1, "heading": 85, "flag": "Netherlands" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [121.5, 25.3] }, "properties": { "name": "WAN HAI 502", "mmsi": 563088800, "type": "Cargo", "destination": "Singapore", "speed": 18.8, "heading": 200, "flag": "Singapore" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-77.5, 18.2] }, "properties": { "name": "CS ABEILLE LIBERTE", "mmsi": 227181000, "type": "Tug", "destination": "Kingston", "speed": 8.0, "heading": 140, "flag": "France" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [28.9, -33.0] }, "properties": { "name": "MSC APOLLO", "mmsi": 636017100, "type": "Cargo", "destination": "Durban", "speed": 15.4, "heading": 260, "flag": "Liberia" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [104.8, 1.3] }, "properties": { "name": "EVER ACE", "mmsi": 565019000, "type": "Cargo", "destination": "Rotterdam", "speed": 21.0, "heading": 270, "flag": "Singapore" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-57.0, -34.9] }, "properties": { "name": "IRIS B", "mmsi": 701000135, "type": "Fishing", "destination": "Mar del Plata", "speed": 6.5, "heading": 320, "flag": "Argentina" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [126.0, 37.5] }, "properties": { "name": "HYUNDAI TOKYO", "mmsi": 440364000, "type": "Cargo", "destination": "Long Beach", "speed": 19.2, "heading": 90, "flag": "South Korea" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-6.2, 36.1] }, "properties": { "name": "STENA PLUS", "mmsi": 266000500, "type": "Passenger", "destination": "Tangier Med", "speed": 23.4, "heading": 180, "flag": "Sweden" } }
+  ],
+  "meta": { "source": "sample", "note": "Illustrative snapshot. Run `npm run fetch:sea` after adding an AISHub key." }
+}

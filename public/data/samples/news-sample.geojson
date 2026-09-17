@@ -1,0 +1,18 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [37.62, 55.75] }, "properties": { "actor1": "RUSSIA", "actor2": "UKRAINE", "quadClass": 4, "tone": -8.2, "mentions": 320, "date": "2026-09-15", "country": "RS", "place": "Moscow, Russia", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [30.52, 50.45] }, "properties": { "actor1": "UKRAINE", "actor2": "RUSSIA", "quadClass": 3, "tone": -6.4, "mentions": 205, "date": "2026-09-15", "country": "UP", "place": "Kyiv, Ukraine", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [116.4, 39.9] }, "properties": { "actor1": "CHINA", "actor2": "UNITED STATES", "quadClass": 2, "tone": 1.1, "mentions": 140, "date": "2026-09-15", "country": "CH", "place": "Beijing, China", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [35.2, 31.7] }, "properties": { "actor1": "ISRAEL", "actor2": "LEBANON", "quadClass": 4, "tone": -9.1, "mentions": 289, "date": "2026-09-15", "country": "IS", "place": "Jerusalem, Israel", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [111.7, -7.5] }, "properties": { "actor1": "INDONESIA", "actor2": "ASEAN", "quadClass": 1, "tone": 2.4, "mentions": 88, "date": "2026-09-15", "country": "ID", "place": "Jakarta, Indonesia", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-46.6, -23.5] }, "properties": { "actor1": "BRAZIL", "actor2": "EUROPEAN UNION", "quadClass": 2, "tone": 0.8, "mentions": 64, "date": "2026-09-15", "country": "BR", "place": "Sao Paulo, Brazil", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [32.3, 15.5] }, "properties": { "actor1": "SUDAN", "actor2": "SUDAN", "quadClass": 4, "tone": -7.7, "mentions": 175, "date": "2026-09-15", "country": "SU", "place": "Khartoum, Sudan", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [1.4, 44.0] }, "properties": { "actor1": "FRANCE", "actor2": "GERMANY", "quadClass": 1, "tone": 3.0, "mentions": 42, "date": "2026-09-15", "country": "FR", "place": "Paris, France", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-99.1, 19.4] }, "properties": { "actor1": "MEXICO", "actor2": "UNITED STATES", "quadClass": 2, "tone": 1.6, "mentions": 57, "date": "2026-09-15", "country": "MX", "place": "Mexico City, Mexico", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [114.2, 22.3] }, "properties": { "actor1": "CHINA", "actor2": "PHILIPPINES", "quadClass": 3, "tone": -4.9, "mentions": 121, "date": "2026-09-15", "country": "CH", "place": "Hong Kong, China", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [44.4, 33.3] }, "properties": { "actor1": "IRAQ", "actor2": "UNITED STATES", "quadClass": 3, "tone": -3.2, "mentions": 95, "date": "2026-09-15", "country": "IZ", "place": "Baghdad, Iraq", "sourceUrl": null } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [30.2, -1.9] }, "properties": { "actor1": "RWANDA", "actor2": "UNITED NATIONS", "quadClass": 1, "tone": 1.9, "mentions": 33, "date": "2026-09-15", "country": "RW", "place": "Kigali, Rwanda", "sourceUrl": null } }
+  ],
+  "meta": { "source": "sample", "note": "Illustrative GDELT-style snapshot. Run `npm run fetch:news` for the real daily feed." }
+}

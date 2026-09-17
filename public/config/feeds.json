@@ -1,0 +1,122 @@
+[
+  {
+    "id": "air",
+    "name": "Air traffic",
+    "type": "geojson",
+    "url": "data/snapshots/air.json",
+    "sampleUrl": "data/samples/air-sample.geojson",
+    "enabled": true,
+    "attribution": "Snapshot via OpenSky Network",
+    "style": {
+      "color": "#22d3ee",
+      "size": 5,
+      "sizeBy": "altitude",
+      "sizeMin": 3,
+      "sizeMax": 10,
+      "outline": true
+    },
+    "popup": [
+      { "label": "Callsign", "property": "callsign" },
+      { "label": "Country", "property": "originCountry" },
+      { "label": "Altitude (m)", "property": "altitude" },
+      { "label": "Speed (m/s)", "property": "velocity" },
+      { "label": "Type", "property": "category" }
+    ]
+  },
+  {
+    "id": "sea",
+    "name": "Sea traffic",
+    "type": "geojson",
+    "url": "data/snapshots/sea.json",
+    "sampleUrl": "data/samples/sea-sample.geojson",
+    "enabled": true,
+    "attribution": "Snapshot via AIS feed",
+    "style": {
+      "color": "#38bdf8",
+      "size": 5,
+      "sizeMin": 3,
+      "sizeMax": 10,
+      "outline": true
+    },
+    "popup": [
+      { "label": "Vessel", "property": "name" },
+      { "label": "Type", "property": "type" },
+      { "label": "Destination", "property": "destination" },
+      { "label": "Speed (kn)", "property": "speed" },
+      { "label": "Heading", "property": "heading" }
+    ]
+  },
+  {
+    "id": "news",
+    "name": "Geopolitical events & news (GDELT)",
+    "type": "geojson",
+    "url": "data/snapshots/news.json",
+    "sampleUrl": "data/samples/news-sample.geojson",
+    "enabled": true,
+    "attribution": "GDELT Project daily snapshot",
+    "clickable": true,
+    "newsFeed": true,
+    "source": {
+      "type": "gdelt",
+      "keywords": [],
+      "minMentions": 5,
+      "maxResults": 1500,
+      "quadClass": "all",
+      "lagDays": 1
+    },
+    "style": {
+      "colorByProperty": "quadClass",
+      "colors": {
+        "1": "#34d399",
+        "2": "#4ade80",
+        "3": "#fb923c",
+        "4": "#f87171"
+      },
+      "legend": {
+        "1": "Verbal cooperation",
+        "2": "Material cooperation",
+        "3": "Verbal conflict",
+        "4": "Material conflict"
+      },
+      "size": 5,
+      "sizeBy": "mentions",
+      "sizeMin": 2,
+      "sizeMax": 9,
+      "outline": true
+    },
+    "popup": [
+      { "label": "Actor", "property": "actor1" },
+      { "label": "Target", "property": "actor2" },
+      { "label": "Class", "property": "quadClass" },
+      { "label": "Tone", "property": "tone" },
+      { "label": "Date", "property": "date" },
+      { "label": "Open article", "property": "sourceUrl", "url": true }
+    ]
+  },
+  {
+    "id": "housing",
+    "name": "Housing prices (example — drop in your own)",
+    "type": "csv",
+    "url": "data/samples/housing-sample.csv",
+    "sampleUrl": "data/samples/housing-sample.csv",
+    "enabled": false,
+    "columns": {
+      "lat": "lat",
+      "lon": "lon",
+      "name": "place"
+    },
+    "style": {
+      "color": "#c084fc",
+      "size": 6,
+      "sizeMin": 3,
+      "sizeMax": 10,
+      "outline": true
+    },
+    "popup": [
+      { "label": "Place", "property": "place" },
+      { "label": "Median price (USD)", "property": "medianPriceUsd" },
+      { "label": "Property tax rate", "property": "propertyTaxRatePct" },
+      { "label": "Green cover", "property": "reforestCoverPct" }
+    ]
+  }
+]

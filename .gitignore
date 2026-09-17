@@ -1,0 +1,7 @@
+node_modules/
+dist/
+public/cesium-assets/
+public/data/snapshots/*.json
+public/data/snapshots/*.geojson
+public/config/secrets.json
+.DS_Store

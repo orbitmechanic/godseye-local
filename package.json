@@ -1,0 +1,22 @@
+{
+  "name": "godseye-local",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "postinstall": "node scripts/copy-cesium-assets.mjs",
+    "fetch": "node scripts/fetch-all.mjs",
+    "fetch:air": "node scripts/fetch-air.mjs",
+    "fetch:sea": "node scripts/fetch-sea.mjs",
+    "fetch:news": "node scripts/fetch-news.mjs"
+  },
+  "dependencies": {
+    "cesium": "^1.141.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

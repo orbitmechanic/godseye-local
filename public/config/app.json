@@ -1,0 +1,13 @@
+{
+  "imagery": "nasa",
+  "homeView": {
+    "longitude": -95,
+    "latitude": 35,
+    "height": 6000000
+  },
+  "ui": {
+    "showNewsPanel": true,
+    "showLegend": true,
+    "clockFormat": "24h"
+  }
+}

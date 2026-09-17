@@ -16,21 +16,25 @@ let onCount = null;
 let onPick = null;
 
 function makeImagery(providerName) {
-  if (providerName === 'osm') {
-    return new UrlTemplateImageryProvider({
+  const table = {
+    esri: () => new UrlTemplateImageryProvider({
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      maximumLevel: 19,
+      credit: 'Esri, Maxar, Earthstar Geographics'
+    }),
+    nasa: () => new UrlTemplateImageryProvider({
+      url: 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg',
+      maximumLevel: 8,
+      credit: 'NASA GIBS'
+    }),
+    osm: () => new UrlTemplateImageryProvider({
       url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       maximumLevel: 19,
       credit: '© OpenStreetMap contributors'
-    });
-  }
-  // NASA GIBS Blue Marble (EPSG:3857), no key required. Cesium's WMTS provider
-  // in 1.145 does not substitute {Layer}/{Format} in REST paths, so use the
-  // literal template with UrlTemplateImageryProvider instead.
-  return new UrlTemplateImageryProvider({
-    url: 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_NextGeneration/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg',
-    maximumLevel: 8,
-    credit: 'NASA GIBS'
-  });
+    })
+  };
+  // Requested provider first; otherwise default to Esri (keyless, ~1m/px).
+  return (table[providerName] || table.esri)();
 }
 
 export function initGlobe(appConfig, { onCountUpdate, onPick: pickCb }) {
@@ -51,14 +55,24 @@ export function initGlobe(appConfig, { onCountUpdate, onPick: pickCb }) {
     selectionIndicator: false
   });
 
-  viewer.imageryLayers.addImageryProvider(makeImagery(appConfig.imagery || 'nasa'), 0);
+  viewer.imageryLayers.addImageryProvider(makeImagery(appConfig.imagery || 'esri'), 0);
   viewer.scene.globe.baseColor = Color.fromCssColorString('#05070c');
   viewer.scene.skyBox.show = false;
 
-  const imgLayer = viewer.imageryLayers.get(0);
-  const provider = imgLayer.imageryProvider;
-  provider.errorEvent.addEventListener((err) => {
-    console.warn('imagery error:', (err && (err.message || err)) || err);
+  // Runtime fallback: if the current provider fails to fetch tiles, swap the
+  // layer to the next candidate (esri -> nasa -> osm) once per boot.
+  const fallbackOrder = ['esri', 'nasa', 'osm'];
+  let fallbackFrom = appConfig.imagery || 'esri';
+  let fallbackSwapped = false;
+  viewer.imageryLayers.get(0).imageryProvider.errorEvent.addEventListener((err) => {
+    const layer = viewer.imageryLayers.get(0);
+    if (fallbackSwapped) return;
+    const next = fallbackOrder[fallbackOrder.indexOf(fallbackFrom) + 1];
+    if (!next) return;
+    fallbackSwapped = true;
+    console.warn(`imagery: ${fallbackFrom} tile failed, falling back to ${next}`, (err && (err.message || err)) || err);
+    layer.imageryProvider = makeImagery(next);
+    fallbackFrom = next;
   });
   viewer.scene.renderError.addEventListener((_scene, err) => {
     console.error('scene render error:', err && err.message);

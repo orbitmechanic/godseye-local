@@ -8,7 +8,9 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType
 } from 'cesium';
+import { resolveNetworkLocation } from './geo.js';
 
+let globeConfig = null;
 let viewer = null;
 const layers = new Map(); // feedId -> { feed, ds, count }
 const propStore = new Map(); // entityId -> plain properties object
@@ -38,6 +40,7 @@ function makeImagery(providerName) {
 }
 
 export function initGlobe(appConfig, { onCountUpdate, onPick: pickCb }) {
+  globeConfig = appConfig;
   onCount = onCountUpdate;
   onPick = pickCb;
 
@@ -78,7 +81,8 @@ export function initGlobe(appConfig, { onCountUpdate, onPick: pickCb }) {
     console.error('scene render error:', err && err.message);
   });
 
-  const home = appConfig.homeView || { longitude: -95, latitude: 35, height: 6000000 };
+  const home = globeConfig.homeView || { longitude: -95, latitude: 35, height: 6000000 };
+  resetHomeView(); // north-up over network location at 1000 km (same as Home button)
   viewer.camera.setView({
     destination: Cartesian3.fromDegrees(home.longitude, home.latitude, home.height)
   });
@@ -217,4 +221,16 @@ export function flyToEntity(feedId, index) {
 
 export function forceSceneRender() {
   viewer.scene.requestRender();
+}
+
+export async function resetHomeView() {
+  const home = (globeConfig && globeConfig.homeView) || { longitude: -95, latitude: 35, height: 1000000 };
+  const pos = await resolveNetworkLocation(home);
+  const lon = (pos && Number.isFinite(pos.longitude)) ? pos.longitude : home.longitude;
+  const lat = (pos && Number.isFinite(pos.latitude)) ? pos.latitude : home.latitude;
+  viewer.camera.setView({
+    destination: Cartesian3.fromDegrees(lon, lat, 1000000),
+    orientation: { heading: 0, pitch: -Math.PI / 2, roll: 0 }
+  });
+  if (viewer.scene && typeof viewer.scene.requestRender === 'function') viewer.scene.requestRender();
 }

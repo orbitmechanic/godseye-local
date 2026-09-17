@@ -1,4 +1,4 @@
-import { flyToEntity } from './layers.js';
+import { flyToEntity, resetHomeView } from './layers.js';
 import { loadFeed } from './loader.js';
 import { addFeed, setFeedVisible } from './layers.js';
 
@@ -6,6 +6,8 @@ const counts = new Map(); // feedId -> entity count
 const newsIndex = new Map(); // row key -> { feedId, index }
 
 export async function setupUI({ feeds, viewer }) {
+  const homeBtn = document.getElementById('homeBtn');
+  if (homeBtn) homeBtn.addEventListener('click', () => resetHomeView());
   buildLayerList(feeds);
   startClock();
   bindScratchpad();

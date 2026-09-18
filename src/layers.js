@@ -13,6 +13,7 @@ import { resolveNetworkLocation } from './geo.js';
 let globeConfig = null;
 let viewer = null;
 const layers = new Map(); // feedId -> { feed, ds, count }
+const parsedCache = new Map(); // feedId -> { feed, geojson } re-enable cache
 const propStore = new Map(); // entityId -> plain properties object
 let onCount = null;
 let onPick = null;
@@ -132,6 +133,7 @@ function pointStyle(feed, props, sizeByStat) {
 
 export async function addFeed(feed, geojson) {
   removeFeed(feed.id);
+  parsedCache.set(feed.id, { feed, geojson });
 
   const ds = new CustomDataSource(feed.id);
   const sizeByStat = { min: Infinity, max: -Infinity };
@@ -204,9 +206,33 @@ export function removeFeed(feedId) {
   }
 }
 
-export function setFeedVisible(feedId, visible) {
-  const layer = layers.get(feedId);
-  if (layer) layer.ds.show = visible;
+export function cacheParsed(feed, geojson) {
+  parsedCache.set(feed.id, { feed, geojson });
+}
+
+export async function setFeedVisible(feedId, visible) {
+  if (visible) {
+    // Exclusive single-layer mode: only this feed may be resident on the
+    // globe at a time. Turning one ON tears down every other feed — removeFeed
+    // destroys its DataSource (ds.remove(ds, true)) which releases the GPU +
+    // CPU geometry buffers for thousands of tracked vehicles. This is the real
+    // local-memory + render-time win for the large air/sea traffic feeds.
+    for (const id of [...layers.keys()]) {
+      if (id !== feedId) removeFeed(id);
+    }
+    // (Re)build this feed from the parsed-geojson JS cache — instant, no
+    // network refetch, no CSV/GeoJSON reparse.
+    if (!layers.has(feedId)) {
+      const cached = parsedCache.get(feedId);
+      if (cached) await addFeed(cached.feed, cached.geojson);
+    }
+    const layer = layers.get(feedId);
+    if (layer) layer.ds.show = true;
+  } else {
+    // Turning a feed OFF also fully destroys its DataSource so hidden feeds
+    // cost ~zero resident memory instead of gigabytes of idle vehicle data.
+    removeFeed(feedId);
+  }
 }
 
 export function getFeatureEntity(feedId, index) {

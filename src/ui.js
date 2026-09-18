@@ -27,6 +27,11 @@ function buildLayerList(feeds) {
     cb.type = 'checkbox';
     cb.checked = feed.enabled !== false;
     cb.addEventListener('change', () => {
+      if (cb.checked) {
+        for (const other of listEl.querySelectorAll('input[type="checkbox"]')) {
+          if (other !== cb) other.checked = false;
+        }
+      }
       setFeedVisible(feed.id, cb.checked);
     });
 

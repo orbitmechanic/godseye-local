@@ -103,6 +103,8 @@ func fetch_air() -> Variant:
 			continue
 		if s[5] == null or s[6] == null:
 			continue
+		if s[8] == true:
+			continue  # onGround: parked at the airport, not traffic
 		var props := {
 			callsign = String(s[1]).strip_edges() if s[1] != null else null,
 			originCountry = s[2],
@@ -122,9 +124,9 @@ func fetch_air() -> Variant:
 			properties = props,
 		})
 	features.sort_custom(func(a, b): return _alt_of(a) > _alt_of(b))
-	if features.size() > 5000:
-		features.resize(5000)
-	print("air: OpenSky snapshot (%d states)" % features.size())
+	if features.size() > 30000:
+		features.resize(30000)  # sanity bound only; the fleet is ~11-13k
+	print("air: OpenSky snapshot (%d airborne states)" % features.size())
 	return {
 		type = "FeatureCollection",
 		features = features,

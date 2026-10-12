@@ -70,10 +70,10 @@ func _run() -> void:
 	# --- style port: colorByProperty + sizeBy ramp ----------------------------
 	var news_geo: Dictionary = App.parsed_cache.get("news", {})
 	ok(not news_geo.is_empty(), "news snapshot parsed")
+	var news_feed: Dictionary = App.find_feed("news")
+	var n: int = news_geo.features.size()
 	if not news_geo.is_empty():
-		var news_feed: Dictionary = App.find_feed("news")
 		points.set_data(news_feed, news_geo)
-		var n: int = news_geo.features.size()
 		ok(points._count == n, "news feature -> instance mapping", "%d/%d" % [points._count, n])
 		var min_px := INF
 		var max_px := -INF
@@ -106,6 +106,69 @@ func _run() -> void:
 		ok(sorted, "news sorted by mentions desc")
 		ok(mentions > 0, "mentions parsed from GDELT data")
 
+	# --- sphere tiles: master buffer + view culling ---------------------------
+	var vs := Vector2(1400, 900)
+	var tiles_live := 0
+	var tiled_total := 0
+	for t in points._tile_nodes.size():
+		if points._tile_nodes[t] != null:
+			tiles_live += 1
+			tiled_total += points._tile_points[t].size()
+	ok(tiles_live > 0 and tiles_live <= 288, "news data chunked into tiles", str(tiles_live))
+	ok(tiled_total == points._count, "tiles cover the master buffer exactly",
+		"%d/%d" % [tiled_total, points._count])
+	ok(points._tile_index(35.0, -95.0) == points._tile_index(34.0, -96.0),
+		"tile index is locality-stable")
+	ok(points._tile_index(35.0, -95.0) != points._tile_index(35.0, 85.0),
+		"antipodal meridian lands in another tile")
+	globe.set_view(-95.0, 35.0, 1.94, true)
+	var home_tile: int = points._tile_index(35.0, -95.0)
+	var anti_tile: int = points._tile_index(35.0, 85.0)
+	ok(home_tile in points._visible_tiles and not (anti_tile in points._visible_tiles),
+		"culling hides the far side of the globe",
+		"vis=%d/%d" % [points._visible_tiles.size(), tiles_live])
+	var vis_before: int = points._visible_tiles.size()
+	globe.set_view(85.0, 35.0, 1.94, true)
+	ok(home_tile not in points._visible_tiles and anti_tile in points._visible_tiles,
+		"turning the globe swaps the visible tile set",
+		"%d -> %d tiles" % [vis_before, points._visible_tiles.size()])
+	globe.set_view(-95.0, 35.0, 1.94, true)
+	# Cluster throttle: cached between camera events, fresh on demand.
+	var c1: Array = points.cluster_cells(globe.camera, vs, true)
+	var c2: Array = points.cluster_cells(globe.camera, vs)
+	ok(c1.size() > 0, "clusters computed from visible tiles")
+	var tick_before: int = points._cluster_tick
+	var c3: Array = points.cluster_cells(globe.camera, vs)
+	ok(points._cluster_tick == tick_before and c3 == c2, "cluster result cached between views")
+	globe.set_view(-90.0, 35.0, 1.94, true)
+	var c4: Array = points.cluster_cells(globe.camera, vs, true)
+	ok(points._cluster_tick > tick_before, "camera events tick the cluster budget")
+	# A 20k synthetic fleet stays fully buffered, partly drawn.
+	var many2 := {"type": "FeatureCollection", "features": []}
+	for i in 20000:
+		many2.features.append({
+			"type": "Feature",
+			"geometry": {"type": "Point",
+				"coordinates": [-180.0 + 360.0 * float(i) / 20000.0, -85.0 + 170.0 * float(i % 977) / 977.0]},
+			"properties": {},
+		})
+	var feed_big := {id = "big", name = "big", style = {}}
+	globe.points.set_data(feed_big, many2)
+	ok(globe.points._count == 20000, "master buffer holds 20k points")
+	globe.set_view(-95.0, 35.0, 1.94, true)
+	var drawn := 0
+	for t in globe.points._visible_tiles:
+		drawn += globe.points._tile_points[t].size()
+	ok(drawn < 13000 and drawn > 3000, "only a view-relevant fraction is drawn",
+		str(drawn))
+	var t_total := 0
+	for t in globe.points._tile_nodes.size():
+		if globe.points._tile_nodes[t] != null:
+			t_total += globe.points._tile_points[t].size()
+	ok(t_total == 20000, "re-bucketing kept every point")
+	globe.points.set_data(news_feed, news_geo)
+	ok(globe.points._count == n, "restored news feed intact")
+
 	# --- occlusion + projection ----------------------------------------------
 	globe.points.clear()
 	var synthetic := {"type": "FeatureCollection", "features": [
@@ -119,7 +182,6 @@ func _run() -> void:
 	globe.set_view(0.0, 0.0, 2.0, true)
 	await get_tree().process_frame
 	var cam: Camera3D = globe.camera
-	var vs := Vector2(1400, 900)
 	var sp0: Dictionary = globe.points._project(cam, globe.points.world_pos(0), vs)
 	ok(not sp0.is_empty(), "front hemisphere point projects")
 	ok(globe.points._project(cam, globe.points.world_pos(1), vs).is_empty(),
@@ -170,10 +232,10 @@ func _run() -> void:
 	</channel></rss>"""
 	var rss: Dictionary = main.loader._rss_to_geojson(rss_text, {geo = {lat = 10.0, lng = 20.0}})
 	ok((rss.features as Array).size() == 2, "rss items parsed", str(rss.features.size()))
-	var c0: Array = rss.features[0].geometry.coordinates
-	ok(absf(c0[0] - 2.35) < 1e-4 and absf(c0[1] - 48.85) < 1e-4, "georss coordinates")
-	var c1: Array = rss.features[1].geometry.coordinates
-	ok(absf(c1[1] - 10.0) < 1e-4, "feed-level geo fallback")
+	var r0: Array = rss.features[0].geometry.coordinates
+	ok(absf(r0[0] - 2.35) < 1e-4 and absf(r0[1] - 48.85) < 1e-4, "georss coordinates")
+	var r1: Array = rss.features[1].geometry.coordinates
+	ok(absf(r1[1] - 10.0) < 1e-4, "feed-level geo fallback")
 
 	# --- feed state: exclusivity ----------------------------------------------
 	App.set_feed_visible("news", true)

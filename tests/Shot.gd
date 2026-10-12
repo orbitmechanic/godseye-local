@@ -40,10 +40,9 @@ func _run() -> void:
 
 	globe.set_view(-95.0, 35.0, 1.94, true)
 	var diag := FileAccess.open(DIR + "shot_diag.txt", FileAccess.WRITE)
-	diag.store_string("feed=%s count=%d mesh=%s vis=%s in_tree=%s\n" % [
+	diag.store_string("feed=%s count=%d tiles_vis=%d tiles=%s\n" % [
 		String(globe.points.feed.get("id", "")), globe.points._count,
-		str(globe.points.mesh != null), str(globe.points.visible),
-		str(globe.points.is_inside_tree()),
+		globe.points._visible_tiles.size(), str(globe.points._tile_nodes.size()),
 	])
 	diag.store_string("vp_h=%f uht=%s uvh=%s\n" % [
 		globe.viewport_height(),

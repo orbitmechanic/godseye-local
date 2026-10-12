@@ -28,7 +28,7 @@ To pull real snapshot data (air / sea / news):
 
 ```
 godot --headless --path . -s tools/fetch_news.gd   # GDELT, no key needed
-godot --headless --path . -s tools/fetch_air.gd    # OpenSky (account optional, anonymous is rate-limited)
+godot --headless --path . -s tools/fetch_air.gd    # OpenSky: every airborne state (~8-12k)
 godot --headless --path . -s tools/fetch_sea.gd    # AIS Hub (needs free username)
 godot --headless --path . -s tools/fetch_all.gd    # all three
 ```
@@ -128,8 +128,14 @@ routes.
   streaming, no Cesium ion, no terrain — the tradeoff for a self-contained
   native binary; `esri`/`nasa`/`osm` config values now select bundled textures.
 - Markers are shader-billboarded quads with constant pixel size (MultiMesh's
-  instance API is unreliable in 4.7), screen-space clustering above 300
-  points, and CPU nearest-projected picking — matching the Cesium behavior.
+  instance API is unreliable in 4.7) managed game-engine style: the full
+  snapshot lives in CPU-side typed arrays, the geometry is chunked into
+  24x12 sphere tiles, and each camera move culls the tiles outside the
+  visible limb — ~15% of chunks (and their triangles) reach the GPU, and
+  clustering/picking iterate only the points in visible tiles. The 5000-state
+  Cesium-era cap is gone; the layer renders the whole fleet (~8-12k) at
+  interactive framerates. Screen-space clustering above 300 points and
+  nearest-projected picking match the Cesium behavior.
 - The browser fetch scripts are headless GDScript tools (`tools/fetch_*.gd`).
 - Exclusive single-layer mode (one feed resident at a time) is unchanged.
 

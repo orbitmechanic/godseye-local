@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://yh2jdyeitijr"
+
+[deps]
+
+files=["res://data/samples/housing-sample.lon.translation", "res://data/samples/housing-sample.place.translation", "res://data/samples/housing-sample.medianPriceUsd.translation", "res://data/samples/housing-sample.propertyTaxRatePct.translation", "res://data/samples/housing-sample.reforestCoverPct.translation"]
+
+source_file="res://data/samples/housing-sample.csv"
+dest_files=["res://data/samples/housing-sample.lon.translation", "res://data/samples/housing-sample.place.translation", "res://data/samples/housing-sample.medianPriceUsd.translation", "res://data/samples/housing-sample.propertyTaxRatePct.translation", "res://data/samples/housing-sample.reforestCoverPct.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

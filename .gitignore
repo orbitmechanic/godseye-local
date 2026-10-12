@@ -1,8 +1,18 @@
-node_modules/
-dist/
-.cache/
-public/cesium-assets/
-public/data/snapshots/*.json
-public/data/snapshots/*.geojson
-public/config/secrets.json
+# Godot 4 generated cache/metadata
+.godot/
+
+# Salvaged Cesium texture tiles (input to tools/build_globe_textures.gd,
+# regenerated output lives in assets/imagery/)
+_salvage/
+
+# Runtime data: snapshots are downloaded by the fetch tools; secrets hold
+# optional free-tier API keys. Config and samples are tracked.
+data/snapshots/*.json
+data/snapshots/*.geojson
+data/config/secrets.json
+
+# OS / editor
 .DS_Store
+
+# GDELT master-index cache from the fetch tools
+.cache/

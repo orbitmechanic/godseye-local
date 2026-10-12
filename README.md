@@ -1,39 +1,50 @@
-# Godseye Local
+# Ithildin
 
-A local-first geospatial dashboard on a 3D globe. Toggle live-ish snapshot layers
-(air traffic, sea traffic, geopolitical events/news from GDELT) and drop in your
-*own* data — housing prices, property tax rates, reforestation effort, whatever —
-by editing one prettyfied JSON file.
+A local-first geospatial dashboard on a 3D globe — **a native Godot 4 rewrite
+of the CesiumJS web app this repo began as** (history preserved; the GitHub
+repo was renamed from `godseye-local`). Toggle live-ish snapshot layers (air
+traffic, sea traffic, geopolitical events/news from GDELT) and drop in your
+*own* data — housing prices, property tax rates, reforestation effort,
+whatever — by editing one prettyfied JSON file.
 
 Nothing is real-time and nothing leaves your machine. Daily snapshots are
-downloaded on demand by scripts you run (`npm run fetch`); the dashboard reads
-whatever snapshots are in `public/data/snapshots/`.
+downloaded on demand by tools you run; the dashboard reads whatever snapshots
+are in `data/snapshots/`. The basemap is bundled offline imagery, so the core
+app works with no network at all.
 
 ## Quick start
 
 ```
-npm install
-npm run dev          # -> http://127.0.0.1:5173
+godot --path .            # or open the project in the Godot 4.7 editor
 ```
+
+Controls: left-drag rotates the globe, wheel zooms, **⌂** (or boot) jumps to a
+north-up 1 000 km view over your network location (keyless `ipwho.is` lookup,
+config fallback). Press `/` and paste a GeoJSON/CSV/RSS URL, then Ctrl+Enter,
+to load it as a temporary ad-hoc layer. Click any marker or cluster bubble for
+details (clusters zoom in).
 
 To pull real snapshot data (air / sea / news):
 
 ```
-npm run fetch:news              # GDELT, no key needed
-npm run fetch:air               # OpenSky Network (add free key for reliability)
-npm run fetch:sea               # AIS Hub (add free key)
-npm run fetch                   # all three
+godot --headless --path . -s tools/fetch_news.gd   # GDELT, no key needed
+godot --headless --path . -s tools/fetch_air.gd    # OpenSky (account optional, anonymous is rate-limited)
+godot --headless --path . -s tools/fetch_sea.gd    # AIS Hub (needs free username)
+godot --headless --path . -s tools/fetch_all.gd    # all three
 ```
+
+They write prettyfied GeoJSON snapshots to `data/snapshots/`.
 
 ## The config — where everything is tuned
 
-All tuning happens in human-readable prettyfied JSON under `public/config/`:
+All tuning happens in human-readable prettyfied JSON under `data/config/`:
 
-- **`app.json`** — globe defaults: imagery (`nasa` | `osm`), home camera view, UI flags.
-- **`feeds.json`** — the list of layers/feeds. Add, remove, restyle, or point any
-  feed at a new URL. This is the file to edit.
-- **`secrets.json`** (copy from `secrets.example.json`) — optional free-tier API
-  keys; not committed.
+- **`app.json`** — globe defaults: imagery (`nasa` | `osm`, both bundled
+  offline textures), home camera view, UI flags.
+- **`feeds.json`** — the list of layers/feeds. Add, remove, restyle, or point
+  any feed at a new URL. This is the file to edit.
+- **`secrets.json`** (copy from `secrets.example.json`) — optional free-tier
+  API keys; not committed.
 
 ### Feed schema (`feeds.json`)
 
@@ -42,7 +53,7 @@ All tuning happens in human-readable prettyfied JSON under `public/config/`:
   "id": "my-feed",                  // unique id
   "name": "My feed",                // shown in the UI
   "type": "geojson",                // geojson | csv | rss
-  "url": "data/snapshots/my.json",  // data file (served from public/)
+  "url": "data/snapshots/my.json",  // data file (path under the project, or http(s) URL)
   "sampleUrl": "data/samples/my.geojson", // fallback if url is missing
   "enabled": true,
   "clickable": true,                // show info card on click
@@ -68,7 +79,7 @@ All tuning happens in human-readable prettyfied JSON under `public/config/`:
 
 Supported feed types:
 
-- **geojson** — any GeoJSON `FeatureCollection` of points. 
+- **geojson** — any GeoJSON `FeatureCollection` of points.
 - **csv** — lat/lon columns specified in `columns`; all other columns become popup properties.
 - **rss** — any RSS/Atom feed with `geo:lat`/`geo:long` per item (or a feed-level `geo` in the feed object).
 
@@ -78,9 +89,9 @@ conflict (3–4) vs `all`, `lagDays` allows a delay (day-of lag is fine).
 
 ### GDELT news feed
 
-`npm run fetch:news` downloads the prior day's GDELT 2.0 event export
-(`data.gdeltproject.org/gdeltv2/`, keyless), filters per `feeds.json`, and writes
-a prettyfied GeoJSON snapshot to `public/data/snapshots/news.json`. Each event
+`tools/fetch_news.gd` downloads the prior day's GDELT 2.0 event export
+(`data.gdeltproject.org/gdeltv2/`, keyless), filters per `feeds.json`, and
+writes a prettyfied GeoJSON snapshot to `data/snapshots/news.json`. Each event
 becomes a colored globe pin (green = cooperation, red/orange = conflict) and a
 row in the news pane; click through to the source article.
 
@@ -92,17 +103,43 @@ Press `/` while the app is focused, paste a GeoJSON/CSV/RSS URL, and hit
 ## Adding your own datasets
 
 Any dataset with coordinates works: find a shapefile/GIS source, convert to
-GeoJSON or CSV, place it under `public/data/` (or fetch it into
-`public/data/snapshots/`), and add an entry to `feeds.json`. Examples: county
-property-tax rates, median home price by ZIP, tree-planting site polygons,
-wildfire perimeters, transit routes.
+GeoJSON or CSV, place it under `data/` (or fetch it into `data/snapshots/`),
+and add an entry to `feeds.json`. Examples: county property-tax rates, median
+home price by ZIP, tree-planting site polygons, wildfire perimeters, transit
+routes.
 
 ## Privacy / attack surface
 
-- Runs entirely on `127.0.0.1`. No accounts required for the core flows.
-- Snapshot scripts only make outbound HTTPS (HTTP for GDELT) calls to public APIs when you run `npm run fetch`.
+- Runs entirely on your machine; no accounts required for the core flows.
+- The app itself only makes two outbound calls, both keyless and optional:
+  the `ipwho.is` home-location lookup (Home button / boot) and any URLs *you*
+  paste into the scratchpad or configure. The fetch tools contact the public
+  data APIs listed above.
 - Your datasets and config stay local; nothing is uploaded.
-- Optional free keys (OpenSky, AIS Hub) are stored in `secrets.json`, which is gitignored.
+- Optional free keys (OpenSky, AIS Hub) are stored in `secrets.json`, which is
+  gitignored.
+
+## What changed in the Godot port
+
+- The globe is a hand-built equirectangular sphere with two **bundled offline
+  basemaps**: Natural Earth II (stitched from the tiles that shipped inside
+  Cesium — `tools/build_globe_textures.gd`) and NASA GIBS Blue Marble
+  (`tools/build_blue_marble.gd`, one-time download at build time). No tile
+  streaming, no Cesium ion, no terrain — the tradeoff for a self-contained
+  native binary; `esri`/`nasa`/`osm` config values now select bundled textures.
+- Markers are shader-billboarded quads with constant pixel size (MultiMesh's
+  instance API is unreliable in 4.7), screen-space clustering above 300
+  points, and CPU nearest-projected picking — matching the Cesium behavior.
+- The browser fetch scripts are headless GDScript tools (`tools/fetch_*.gd`).
+- Exclusive single-layer mode (one feed resident at a time) is unchanged.
+
+## Development
+
+```
+godot --headless --path . --quit-after 240          # boot smoke test
+godot --headless --path . res://tests/Probe.tscn    # logic probe (~45 assertions)
+godot --path . res://tests/Shot.tscn                # scripted UI states for review
+```
 
 ## License
 

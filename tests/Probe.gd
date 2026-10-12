@@ -43,6 +43,21 @@ func _run() -> void:
 		"latlon->xyz->latlon roundtrip", str(roundtrip))
 	var pole: Vector3 = globe.latlon_to_xyz(90.0, 0.0)
 	ok(pole.distance_to(Vector3.UP) < 1e-6, "north pole is +Y")
+	# Handedness guard: viewed from outside with north up, east must project
+	# to the right of the central meridian (a mirror-image globe passes every
+	# other geometry test but fails this one).
+	var probe_cam := Camera3D.new()
+	add_child(probe_cam)
+	probe_cam.position = Vector3(0, 0, -2.0)
+	probe_cam.look_at(Vector3.ZERO, Vector3.UP)
+	var right := probe_cam.global_transform.basis.x
+	var east: Vector3 = globe.latlon_to_xyz(0.0, 45.0) - globe.latlon_to_xyz(0.0, 0.0)
+	ok(right.dot(east) > 0.5, "east projects to screen-right (non-mirrored)",
+		str(right.dot(east)))
+	var south_to_north: Vector3 = globe.latlon_to_xyz(45.0, 0.0) - globe.latlon_to_xyz(0.0, 0.0)
+	ok(probe_cam.global_transform.basis.y.dot(south_to_north) > 0.5, "north is up",
+		str(probe_cam.global_transform.basis.y.dot(south_to_north)))
+	probe_cam.queue_free()
 	var tex := load("res://assets/imagery/natural_earth_ii.jpg") as Texture2D
 	ok(tex != null and tex.get_width() == 2 * tex.get_height(),
 		"stitched texture is 2:1 equirectangular")

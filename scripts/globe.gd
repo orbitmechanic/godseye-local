@@ -201,10 +201,11 @@ func _shortest_angle(from: float, to: float) -> float:
 
 
 static func _xyz_to_latlon(p: Vector3) -> Vector2:
-	# Returns Vector2(lat, lon) in degrees for a unit-ish vector.
+	# Returns Vector2(lat, lon) in degrees for a unit-ish vector; inverse of
+	# PointCloud._latlon_to_unit.
 	var n := p.normalized()
 	var lat := rad_to_deg(asin(clampf(n.y, -1.0, 1.0)))
-	var lon := rad_to_deg(atan2(n.x, -n.z))
+	var lon := rad_to_deg(atan2(-n.x, -n.z))
 	return Vector2(lat, lon)
 
 

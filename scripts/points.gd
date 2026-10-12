@@ -276,9 +276,11 @@ static func _segment_hits_globe(from: Vector3, to: Vector3, radius: float = 1.0)
 
 
 static func _latlon_to_unit(lat: float, lon: float) -> Vector3:
+	# Right-handed north-up mapping: +lat -> +Y, east -> screen-right when
+	# looking at the sphere from outside (x = -cos(lat) * sin(lon)).
 	var phi := deg_to_rad(lat)
 	var theta := deg_to_rad(lon)
-	return Vector3(cos(phi) * sin(theta), sin(phi), -cos(phi) * cos(theta))
+	return Vector3(-cos(phi) * sin(theta), sin(phi), -cos(phi) * cos(theta))
 
 
 func _size_ramp(features: Array, style: Dictionary) -> Dictionary:
